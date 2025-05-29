@@ -51,7 +51,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun VocabularyPager(
     tts: TextToSpeech,
@@ -69,8 +68,10 @@ fun VocabularyPager(
         return
     }
 
+    val maxIndicatorCount = 10
     val coroutineScope = rememberCoroutineScope()
     var localVocabularyList by remember { mutableStateOf<List<Vocabulary>>(vocabularyList) }
+    var isFirst by remember { mutableStateOf(true) }
     var isUpdated by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState()
 
@@ -85,16 +86,19 @@ fun VocabularyPager(
         }
     }
 
-    LaunchedEffect(Unit) {
-        val index = localVocabularyList.indexOfFirst { it.id == startFromId }
-        if (index >= 0) pagerState.scrollToPage(index)
-    }
     LaunchedEffect(vocabularyList) {
         if (isUpdated) {
             isUpdated = false
         } else {
             localVocabularyList = vocabularyList
-            pagerState.animateScrollToPage(0)
+            if (isFirst) {
+                isFirst = false
+                val index = localVocabularyList.indexOfFirst { it.id == startFromId }
+                if (index >= 0) pagerState.scrollToPage(index)
+            }
+            else {
+                pagerState.animateScrollToPage(0)
+            }
         }
     }
 
@@ -126,6 +130,8 @@ fun VocabularyPager(
     Box(modifier = Modifier.fillMaxWidth()) {
         HorizontalPagerIndicator(
             pagerState = pagerState,
+            pageCount = maxIndicatorCount,
+            pageIndexMapping = { page -> page % maxIndicatorCount },
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(16.dp),
@@ -134,24 +140,6 @@ fun VocabularyPager(
         )
     }
 }
-
-//@Composable
-//fun PagerDotIndicator(
-//    totalCount: Int,
-//    currentIndex: Int
-//) {
-//    val maxVisibleDots = 10
-//    val listState = rememberLazyListState()
-//
-//    LaunchedEffect(currentIndex) {
-//        val centerOffset = maxVisibleDots / 2
-//        val target = when {
-//            currentIndex < centerOffset -> 0
-//            currentIndex > totalCount - centerOffset -> totalCount - maxVisibleDots
-//            else -> currentIndex - centerOffset
-//        }.coerceIn(0, totalCount - maxVisibleDots)
-//    }
-//}
 
 @Composable
 fun VocabularyCard(

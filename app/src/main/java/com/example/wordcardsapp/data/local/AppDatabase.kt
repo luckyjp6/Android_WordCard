@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Vocabulary::class], version = 1)
+@Database(entities = [Vocabulary::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vocabularyDao(): VocabularyDao
 
@@ -35,6 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 val words = lines.map { line ->
                                     val parts = line.split(",")
                                     Vocabulary(
+                                        dataset = "GEPT",
                                         word = parts[0],
                                         partOfSpeech = parts[1],
                                         definition = parts[2],

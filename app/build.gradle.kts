@@ -77,6 +77,10 @@ dependencies {
     // Coroutine
     implementation(libs.kotlinx.coroutines.android)
 
+    // datastore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

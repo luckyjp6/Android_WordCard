@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.example.wordcardsapp.ui.theme.WordCardsAppTheme
 import com.example.wordcardsapp.data.local.AppDatabase
 import com.example.wordcardsapp.viewmodel.VocabularyViewModel
@@ -51,10 +54,12 @@ class MainActivity : ComponentActivity() {
 
                 val title = when (currentRoute) {
                     "home" -> "Let's Learn!"
+                    "setting" -> "Setting"
                     "random_list" -> "Random Words"
                     "important_list" -> "Starred Words"
                     "learned_list" -> "Learned Words"
                     "vocab_detail/{vocabId}" -> "Learned Words Detail"
+                    "import" -> "Import Vocabularies"
                     else -> "Learned Words Detail"
                 }
                 val showBack = (currentRoute != "home")
@@ -84,6 +89,11 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
+                                if (currentRoute == "home") {
+                                    IconButton( onClick = { navController.navigate("setting") } ) {
+                                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                                    }
+                                }
                             }
                         )
                     }
@@ -96,10 +106,21 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(
                                 viewModel,
+                                onSettingScreen = { navController.navigate("setting")},
                                 onNavigateRandomWordsScreen = { navController.navigate("random_list") },
                                 onNavigateImportantWordsScreen = { navController.navigate("important_list") },
                                 onNavigateLearnedWordsScreen = { navController.navigate("learned_list")}
                             )
+                        }
+                        composable("setting") {
+                            SettingScreen(
+                                viewModel,
+                                tts,
+                                onImportVocabularies = { navController.navigate("import") }
+                            )
+                        }
+                        composable("import") {
+                            ImportVocabulariesScreen(viewModel, tts)
                         }
                         composable("random_list") {
                             RandomWordScreen(viewModel, tts)
